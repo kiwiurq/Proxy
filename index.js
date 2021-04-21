@@ -50,7 +50,7 @@ app.get('/get', (req, res) => {
                     res.send('<html><script>window.open("https://proxy.davidfahim.repl.co/video' + url + '.mp4", "_top");</script></html>');
                     setTimeout(function () {
                         fs.unlinkSync('./public/video' + url + '.mp4');
-                    }, duration * 1000);
+                    }, (duration * 1000) + 30000);
                 });
             }, 500);
         }
