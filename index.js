@@ -21,28 +21,36 @@ app.get('/get', (req, res) => {
     if (url.includes('youtube.com/watch?v=') || url.includes('youtu.be')) {
         try {
             var downloaded = 0;
+            if (url.includes('youtube.com/watch?v=')){
+                url = url.split('?v=')[1].split('&')[0];
+            }
+            else{
+                url = url.split('tu.be/')[1].split('&')[0];
+            }
             var video = youtubedl(url, ['--format=18'], { start: downloaded, cwd: __dirname });
+            var duration = 60000;
             video.on('info', function(info) {
                 console.log('Download started')
                 console.log('Filename: ' + info._filename);
                 var total = info.size + downloaded;
                 console.log('Size: ' + total);
+                duration = info.duration;
                 if (downloaded > 0) {
                     console.log('Resuming from: ' + downloaded);
                     console.log('Remaining bytes: ' + info.size);
                 }
-            })
-
-            //video.pipe(fs.createWriteStream('video.mp4', { flags: 'a' }));
-            fs.unlinkSync('./public/video.mp4');
+            });
             setTimeout(function () {
-                video.pipe(fs.createWriteStream('./public/video.mp4', { flags: 'a' }));
+                video.pipe(fs.createWriteStream('./public/video' + url + '.mp4', { flags: 'a' }));
                 video.on('complete', function complete(info) {
                     console.log('Filename: ' + info._filename + ' already downloaded.')
                 });
                 video.on('end', function() {
-                    //fs.createReadStream('video.mp4').pipe(res);
-                    res.send('<html><script>window.open("https://proxy.davidfahim.repl.co/video.mp4", "_top");</script></html>');
+                    //video.pipe(res);
+                    res.send('<html><script>window.open("https://proxy.davidfahim.repl.co/video' + url + '.mp4", "_top");</script></html>');
+                    setTimeout(function () {
+                        fs.unlinkSync('./public/video' + url + '.mp4');
+                    }, duration * 1000);
                 });
             }, 500);
         }
