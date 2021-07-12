@@ -48,9 +48,13 @@ app.get('/get', (req, res) => {
                 video.on('end', function() {
                     //video.pipe(res);
                     res.send('<html><script>window.open("https://proxy.davidfahim.repl.co/video' + url + '.mp4", "_top");</script></html>');
+                    if(duration.includes(':')){
+                        duration = (Number(duration.split(':')[0]) * 60) + 60;
+                    }
+                    var waitTime = 30000 + (duration * 1000);
                     setTimeout(function () {
                         fs.unlinkSync('./public/video' + url + '.mp4');
-                    }, (duration * 1000) + 30000);
+                    }, waitTime);
                 });
             }, 500);
         }
